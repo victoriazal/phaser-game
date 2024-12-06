@@ -19,9 +19,9 @@ export default class CharacterSelectionScene extends Phaser.Scene {
 
     create() {
         const characters = [
-            { key: 'character1', x: 200, y: 300 },
-            { key: 'character2', x: 600, y: 300 },
-            { key: 'character3', x: 1000, y: 300 },
+            { key: 'character1', x: this.scale.width / 4, y: this.scale.height / 2 },
+            { key: 'character2', x: this.scale.width / 2, y: this.scale.height / 2 },
+            { key: 'character3', x: (this.scale.width / 4) * 3, y: this.scale.height / 2 },
         ];
 
         // Create animations for each character
@@ -58,7 +58,8 @@ export default class CharacterSelectionScene extends Phaser.Scene {
         });
 
         // Play button
-        const playButton = this.add.text(800, 800, 'Play', { fontSize: '32px', color: '#ffffff' })
+        const playButton = this.add.text(this.scale.width / 2, this.scale.height / 2 + 100, 'Play', { fontSize: '32px', color: '#ffffff' })
+            .setOrigin(0.5) // Set origin to the center of the text
             .setInteractive({ cursor: 'pointer' }) // Set cursor to pointer
             .on('pointerdown', () => {
                 if (this.selectedCharacter) {
