@@ -30,23 +30,21 @@ export default class GameScene extends Phaser.Scene {
         this.load.image("tree", "/assets/tree.png");
         this.load.image("tree2", "/assets/tree2.png");
         this.load.image("gameBoy", "/assets/gameBoy.png");
+        this.load.image("grassBg", "/assets/grassBg.png"); // Load grass background image
     }
 
     create() {
+        const grassBg = this.add.image(0, 0, "grassBg");
+        grassBg.setOrigin(0, 0); // Set origin to the top-left corner
+        grassBg.setDisplaySize(2000, 2000); // Scale to fit the screen
+    
         // Set gravity to zero
         this.matter.world.setGravity(0, 0);
+    
 
         // Add static objects
         const objects = [
-            { key: "tree", x: 200, y: 600, scale: 0.7 },
-            { key: "tree", x: 2000, y: 500, scale: 0.7 },
-            { key: "tree", x: 1000, y: 800, scale: 0.7 },
-            { key: "tree", x: 800, y: 600, scale: 0.7 },
-            { key: "tree", x: 900, y: 600, scale: 0.7 },
-            { key: "tree", x: 750, y: 300, scale: 0.7 },
-            { key: "tree", x: 660, y: 800, scale: 0.7 },
-            { key: "tree", x: 300, y: 400, scale: 0.7 },
-            { key: "gameBoy", x: 0, y: 0, scale: 0.7 },
+            { key: "gameBoy", x: 1000, y: 1000, scale: 1.5 },
         ];
 
         objects.forEach((obj) => {
@@ -75,7 +73,7 @@ export default class GameScene extends Phaser.Scene {
             frames: this.anims.generateFrameNumbers(this.selectedCharacter, {
                 start: 0,
                 end: 3,
-            }), // Frames 0, 1, 2, 3
+            }), 
             frameRate: 10,
             repeat: -1,
         });
@@ -85,7 +83,7 @@ export default class GameScene extends Phaser.Scene {
             frames: this.anims.generateFrameNumbers(this.selectedCharacter, {
                 start: 4,
                 end: 7,
-            }), // Frames 4, 5, 6, 7
+            }), 
             frameRate: 10,
             repeat: -1,
         });
@@ -95,7 +93,7 @@ export default class GameScene extends Phaser.Scene {
             frames: this.anims.generateFrameNumbers(this.selectedCharacter, {
                 start: 8,
                 end: 11,
-            }), // Frames 8, 9, 10, 11
+            }), 
             frameRate: 10,
             repeat: -1,
         });
@@ -105,15 +103,14 @@ export default class GameScene extends Phaser.Scene {
             frames: this.anims.generateFrameNumbers(this.selectedCharacter, {
                 start: 12,
                 end: 15,
-            }), // Frames 12, 13, 14, 15
+            }),
             frameRate: 10,
             repeat: -1,
         });
 
-        // Add the player character using Matter.js
-        this.player = this.matter.add.sprite(400, 300, this.selectedCharacter);
-        this.player.setScale(2); // Scale down the character
-        this.player.setFixedRotation(); // Prevent the character from rotating
+        this.player = this.matter.add.sprite(600, 700, this.selectedCharacter);
+        this.player.setScale(2.2); 
+        this.player.setFixedRotation(); 
 
         // Set up keyboard controls
         this.cursors = this.input?.keyboard?.createCursorKeys() || null;
@@ -143,21 +140,10 @@ export default class GameScene extends Phaser.Scene {
         this.pressText.setOrigin(0.5);
         this.pressText.setVisible(false);
 
-        // Add collision detection for gameBoy
-        this.matter.world.on("collisionstart", (event: any) => {
-            event.pairs.forEach((pair: any) => {
-                const { bodyA, bodyB } = pair;
-                if (
-                    (bodyA.gameObject === this.player &&
-                        bodyB.gameObject?.texture.key === "gameBoy") ||
-                    (bodyB.gameObject === this.player &&
-                        bodyA.gameObject?.texture.key === "gameBoy")
-                ) {
-                    this.touchingGameBoy = true;
-                    this.pressText?.setVisible(true);
-                }
-            });
-        });
+       this.player.setOnCollide(() => {
+        this.touchingGameBoy = true;
+        this.pressText?.setVisible(true);
+    } );
 
         this.matter.world.on("collisionend", (event: any) => {
             event.pairs.forEach((pair: any) => {

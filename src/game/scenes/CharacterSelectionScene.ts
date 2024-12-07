@@ -2,6 +2,7 @@ import Phaser from 'phaser';
 
 export default class CharacterSelectionScene extends Phaser.Scene {
     private selectedCharacter: string | null = null;
+    private playButton: Phaser.GameObjects.Text | null = null;
 
     constructor() {
         super({ key: 'CharacterSelectionScene' });
@@ -18,6 +19,9 @@ export default class CharacterSelectionScene extends Phaser.Scene {
     }
 
     create() {
+        this.add.text(this.scale.width / 2, this.scale.height / 2 - 100, 'Please select the character', { fontSize: '34px', color: '#ffffff' })
+            .setOrigin(0.5);
+        
         const characters = [
             { key: 'character1', x: this.scale.width / 4, y: this.scale.height / 2 },
             { key: 'character2', x: this.scale.width / 2, y: this.scale.height / 2 },
@@ -43,7 +47,6 @@ export default class CharacterSelectionScene extends Phaser.Scene {
 
             charImage.on('pointerdown', () => {
                 this.selectedCharacter = character.key;
-                console.log(`Selected character: ${this.selectedCharacter}`);
                 characters.forEach(c => {
                     const img = this.children.getByName(c.key) as Phaser.GameObjects.Sprite;
                     if (c.key === character.key) {
@@ -52,15 +55,22 @@ export default class CharacterSelectionScene extends Phaser.Scene {
                         img.clearTint();
                     }
                 });
+
+                // Enable play button
+                if (this.playButton) {
+                    this.playButton.setInteractive({ cursor: 'pointer' });
+                    this.playButton.setVisible(true);
+                }
             });
 
             charImage.setName(character.key); // Set name for the image
         });
 
-        // Play button
-        const playButton = this.add.text(this.scale.width / 2, this.scale.height / 2 + 100, 'Play', { fontSize: '32px', color: '#ffffff' })
+        // Create play button but make it non-interactive and invisible initially
+        this.playButton = this.add.text(this.scale.width / 2, this.scale.height / 2 + 120, 'Play', { fontSize: '32px', color: '#ffffff' })
             .setOrigin(0.5) // Set origin to the center of the text
-            .setInteractive({ cursor: 'pointer' }) // Set cursor to pointer
+            .setInteractive({ cursor: 'pointer' })
+            .setVisible(false)
             .on('pointerdown', () => {
                 if (this.selectedCharacter) {
                     console.log(`Setting registry with character: ${this.selectedCharacter}`);
