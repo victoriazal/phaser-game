@@ -8,6 +8,7 @@ export default class GameScene extends Phaser.Scene {
         null;
     private xKey: Phaser.Input.Keyboard.Key | null = null;
     private pressText: Phaser.GameObjects.Text | null = null;
+    private gameBoy: Phaser.Physics.Matter.Image | null = null;
     private touchingGameBoy: boolean = false;
 
     constructor() {
@@ -37,26 +38,13 @@ export default class GameScene extends Phaser.Scene {
         const grassBg = this.add.image(0, 0, "grassBg");
         grassBg.setOrigin(0, 0); // Set origin to the top-left corner
         grassBg.setDisplaySize(2000, 2000); // Scale to fit the screen
-    
+
         // Set gravity to zero
         this.matter.world.setGravity(0, 0);
-    
 
-        // Add static objects
-        const objects = [
-            { key: "gameBoy", x: 1000, y: 1000, scale: 1.5 },
-        ];
-
-        objects.forEach((obj) => {
-            const staticObj = this.matter.add.image(
-                obj.x,
-                obj.y,
-                obj.key,
-                undefined,
-                { isStatic: true }
-            );
-            staticObj.setScale(obj.scale);
-        });
+        this.gameBoy = this.matter.add.image(1000, 1000, "gameBoy");
+        this.gameBoy.setScale(1.5);
+        this.gameBoy.setStatic(true);
 
         // Set world bounds to match the area covered by objects
         this.matter.world.setBounds(0, 0, 2000, 2000);
@@ -73,7 +61,7 @@ export default class GameScene extends Phaser.Scene {
             frames: this.anims.generateFrameNumbers(this.selectedCharacter, {
                 start: 0,
                 end: 3,
-            }), 
+            }),
             frameRate: 10,
             repeat: -1,
         });
@@ -83,7 +71,7 @@ export default class GameScene extends Phaser.Scene {
             frames: this.anims.generateFrameNumbers(this.selectedCharacter, {
                 start: 4,
                 end: 7,
-            }), 
+            }),
             frameRate: 10,
             repeat: -1,
         });
@@ -93,7 +81,7 @@ export default class GameScene extends Phaser.Scene {
             frames: this.anims.generateFrameNumbers(this.selectedCharacter, {
                 start: 8,
                 end: 11,
-            }), 
+            }),
             frameRate: 10,
             repeat: -1,
         });
@@ -109,8 +97,8 @@ export default class GameScene extends Phaser.Scene {
         });
 
         this.player = this.matter.add.sprite(600, 700, this.selectedCharacter);
-        this.player.setScale(2.2); 
-        this.player.setFixedRotation(); 
+        this.player.setScale(2.2);
+        this.player.setFixedRotation();
 
         // Set up keyboard controls
         this.cursors = this.input?.keyboard?.createCursorKeys() || null;
@@ -126,38 +114,25 @@ export default class GameScene extends Phaser.Scene {
             );
         }
 
-        // Set camera to follow the player
         this.cameras.main.startFollow(this.player);
-        this.cameras.main.setBounds(0, 0, 2000, 2000); // Ensure camera bounds match the world bounds
+        this.cameras.main.setBounds(0, 0, 2000, 2000); 
 
-        // Add "Press X" text indicator
         this.pressText = this.add.text(
             this.player.x,
             this.player.y - 50,
             "Press X",
-            { fontSize: "20px", color: "#ffffff" }
+            { fontSize: "24px", color: "#ffffff" }
         );
         this.pressText.setOrigin(0.5);
         this.pressText.setVisible(false);
 
-       this.player.setOnCollide(() => {
-        this.touchingGameBoy = true;
-        this.pressText?.setVisible(true);
-    } );
-
-        this.matter.world.on("collisionend", (event: any) => {
-            event.pairs.forEach((pair: any) => {
-                const { bodyA, bodyB } = pair;
-                if (
-                    (bodyA.gameObject === this.player &&
-                        bodyB.gameObject?.texture.key === "gameBoy") ||
-                    (bodyB.gameObject === this.player &&
-                        bodyA.gameObject?.texture.key === "gameBoy")
-                ) {
-                    this.touchingGameBoy = false;
-                    this.pressText?.setVisible(false);
-                }
-            });
+        this.player.setOnCollideWith(this.gameBoy, (data: any) => {
+            this.touchingGameBoy = true;
+            this.pressText?.setVisible(true);
+        });
+        this.player.setOnCollideEnd((data: any) => {
+            this.touchingGameBoy = false;
+            this.pressText?.setVisible(false);
         });
     }
 
@@ -231,3 +206,4 @@ export default class GameScene extends Phaser.Scene {
         }
     }
 }
+

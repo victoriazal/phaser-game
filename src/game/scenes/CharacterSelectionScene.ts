@@ -16,10 +16,18 @@ export default class CharacterSelectionScene extends Phaser.Scene {
                 frameHeight: 64 // Height of each frame
             });
         }
+        this.load.image("forest", "/assets/forestBg.png");
     }
 
     create() {
-        this.add.text(this.scale.width / 2, this.scale.height / 2 - 100, 'Please select the character', { fontSize: '34px', color: '#ffffff' })
+        const sky = this.add.image(
+            0,
+            0,
+            "forest"
+        );
+        sky.setOrigin(0, 0); // Set origin to the top-left corner
+        sky.setDisplaySize(this.scale.width, this.scale.height);
+        this.add.text(this.scale.width / 2, this.scale.height / 2 - 200, 'Please select the character', { fontSize: '34px', color: '#162f1a' })
             .setOrigin(0.5);
         
         const characters = [
@@ -67,7 +75,7 @@ export default class CharacterSelectionScene extends Phaser.Scene {
         });
 
         // Create play button but make it non-interactive and invisible initially
-        this.playButton = this.add.text(this.scale.width / 2, this.scale.height / 2 + 120, 'Play', { fontSize: '32px', color: '#ffffff' })
+        this.playButton = this.add.text(this.scale.width / 2, this.scale.height / 2 + 120, 'Play', { fontSize: '32px', color: '#162f1a' })
             .setOrigin(0.5) // Set origin to the center of the text
             .setInteractive({ cursor: 'pointer' })
             .setVisible(false)

@@ -8,7 +8,7 @@ const config: Phaser.Types.Core.GameConfig = {
     width: '100%',
     height: '100%',
     parent: 'game-container',
-    backgroundColor: '#2488b7',
+    backgroundColor: '#386b4e',
     scene: [
         CharacterSelectionScene,
         GameScene,
